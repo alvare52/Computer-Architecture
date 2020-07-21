@@ -1,0 +1,320 @@
+PRINT_TIM    =  0b00000001
+HALT         =  0b10  # 2
+PRINT_NUM    =  0b00000011  # opcode 3
+SAVE         =  0b100
+PRINT_REG    =  0b101    # opcode 5
+ADD          =  0b110
+
+# registers[2] = registers[2] + registers[3]
+
+
+Sameera Roussi:lambda-shield:  11:06 AM
+When you’ve completed the software emulation and you’re ready to take the next step:
+https://eater.net/
+eater.neteater.net
+Ben Eater
+I create tutorial-style videos about electronics, computer architecture, networking, and various other technical subjects. (160 kB)
+https://eater.net/images/8bit-computer.jpg
+:sunglasses:
+2
+:alien:
+2
+:thankyou6:
+1
+:fireball:
+3
+
+11:07
+@here Enjoy your lunch everyone!  See you at 7-minutes past the hour!
+New
+
+Tim:lambda-shield:  11:09 AM
+Thank you all! That was fun and we covered a lot!
+First up, here's our messy file where we worked through bitwise logical operations, bit shifting left and right, and bit masking. You can now make bits do what you what! :thematrixcode:
+bitwise.txt 
+AND, OR, NOT, XOR
+Operation    Boolean Operator     Bitwise Operator
+AND             &&  (and)              &
+OR               ||  (or)              |
+NOT              !  (not)              ~
+XOR                none!               ^
+OR: "At least one or the other"
+AND       True && True --> True
+          True && False --> False
+          False && False --> False
+OR        True || False --> True
+           1    |   0   --> 1
+          True || True  --> True
+            1   |   1   -->   1
+          False || False --> False
+            0    |   0   -->  0
+NOT         !(True) --> False
+              ~1    --> 0
+             !(False) --> True
+             ~0      --> 1
+XOR           True xor False --> True
+              True xor True  --> False
+              False xor False --> False
+  0b1010101
+^ 0b1000101
+-----------
+  0b0010000
+  0b0011100
+^ 0b1010101
+-----------
+  0b1001001
+  ~0b001110
+   0b110001
+if (True and True):
+if (True and False)
+if a or b:
+if (True && False) {}
+if (a || b) {}
+  0b1010101
+& 0b1000101
+-----------
+  0b1001101
+  0b0011100
+& 0b1010101
+-----------
+  0b0010100
+  0b1010101
+| 0b1000101
+-----------
+  0b1010101
+  0b0011100
+| 0b1010101
+-----------
+  0b1011101
+Shifting
+Right Shifting
+0b10101010
+ 0b101010 >> 1
+  0b10101 >> 2
+   0b1010 >> 3
+00010101
+Left Shifting
+  10101010 << 1
+101010100  << 2
+How to isolate bits that we are interested in?
+Left shift!
+ 10101010 >> 6
+ 10
+    vv
+ 10101010 
+ 10101010 >> 3
+    vv
+ 10101 
+ 10101  << 3
+ 10101000
+Masking!
+  1010
+& 0011
+------
+  0010
+      vv
+   10101 
+&  00011 
+--------
+   00001
+  01010101
+& 11111111
+----------
+  01010101
+  01010101
+& 00000000 
+----------
+  00000000       
+AABBCCDD
+ADD  register1 register
+  10100000 >> 6
+          10
+pc += 1 + (command >> 6)
+      01 + 10 == 11
+if command == ADD:
+    pc += 2
+HALT
+  00000001
+memory = [
+    ADD,
+    register1,
+    register2,
+    HALT,
+]
+Collapse
+
+
+
+:thankyou6:
+1
+:thankyoukindly:
+1
+
+11:10
+Next up, we have our look at Python's i/o operations:
+in_and_out.py 
+​
+# try:
+#     file = open("print8.ls8", 'r')
+#     lines = file.read()
+#     # print(lines)
+​
+#     raise Exception('hi')
+# except Exception:
+#     print(file.closed)
+​
+​
+# try:
+#     filename = sys.argv[1]
+# except IndexError:
+#     print('Error Message')
+#     sys.exit()
+​
+import sys
+​
+if len(sys.argv) < 2:
+    print("Please pass in a second filename: python3 in_and_out.py second_filename.py")
+    sys.exit()
+​
+file_name = sys.argv[1]
+try:
+    with open(file_name) as file:
+        for line in file:
+            split_line = line.split('#')[0]
+            command = split_line.strip()
+​
+            if command == '':
+                continue
+​
+            num = int(command, 2)
+​
+            print(f'{num:8b} is {num}')
+            
+​
+except FileNotFoundError:
+    print(f'{sys.argv[0]}: {sys.argv[1]} file was not found')
+    sys.exit()
+Collapse
+
+
+
+:heavy_check_mark:
+1
+
+
+Leo:lambda-web27:  11:10 AM
+great lecture today :fireball:
+:man-bowing:
+1
+:blush:
+1
+
+
+Tim:lambda-shield:  11:12 AM
+THEN, we got to put our knowledge of binary conversions, and i/o, to good use, by un-hardcoding our simple machine.
+Now we can take a file from our hard drive, and load the commands up into working memory, our RAM. Ready to execute them!
+simple01.py 
+​
+PRINT_TIM    =  0b00000001
+HALT         =  0b10  # 2
+PRINT_NUM    =  0b00000011  # opcode 3
+SAVE         =  0b100
+PRINT_REG    =  0b101    # opcode 5
+ADD          =  0b110
+​
+​
+# registers[2] = registers[2] + registers[3]
+​
+# memory = [
+#     PRINT_TIM,
+#     PRINT_TIM,
+#     PRINT_NUM,
+#     42,
+#     SAVE,
+#     2,       # register to put it in
+#     99,      # number to save
+#     SAVE,
+#     3,      # register to save in
+#     1,      # number to save
+#     ADD,
+#     2,   # register to look at, and save stuff in
+#     3,   # register to look at
+#     PRINT_REG,
+#     2,       # register to look at
+#     HALT,
+# #           ]
+
+import sys
+
+memory = [0] * 256
+
+def load_memory(file_name):
+    try:
+        address = 0
+        with open(file_name) as file:
+            for line in file:
+                split_line = line.split("#"[0])
+                command = split_line.strip()
+
+                if command == "":
+                    continue
+
+                instruction = int(command, 2)
+                memory[address] = instruction
+
+                address += 1
+    
+    except FileNotFoundError:
+        print(f"{sys.argv[0]}: {sys.argv[1]} file was not found")
+        sys.exit()
+
+if len(sys.argv) < 2:
+    print("Please pass in a second filename: python3 in_out.py second_filename.py")
+    sys.exit()
+
+file_name = sys.argv[1]
+load_memory(file_name)
+
+# write a program to pull each command out of memory and execute
+# We can loop over it!
+
+# register aka memory
+registers = [0] * 8
+# [0,0,99,0,0,0,0,0]
+# R0-R7
+
+pc = 0
+running = True
+while running:
+    command = memory[pc]
+
+    if command == PRINT_TIM:
+        print("Tim!")
+
+    if command == HALT:
+        running = False
+    
+    if command == PRINT_NUM:
+        num_to_print = memory[pc + 1]
+        print(num_to_print)
+        pc += 1
+
+    if command == SAVE:
+        reg = memory[pc + 1]
+        num_to_save = memory[pc + 2]
+        registers[reg] = num_to_save
+
+        pc += 2
+
+    if command == PRINT_REG:
+        reg_index = memory[pc + 1]
+        print(registers[reg_index])
+        pc += 1
+
+    if command == ADD:
+        first_reg = memory[pc + 1]
+        sec_reg = memory[pc + 2]
+        registers[first_reg] = registers[first_reg] + registers[sec_reg]
+        pc += 2
+
+    pc += 1
