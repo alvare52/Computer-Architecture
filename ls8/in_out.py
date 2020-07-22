@@ -26,7 +26,7 @@ try:
             split_line = line.split("#")[0]
             command = split_line.strip()
 
-            if command = "":
+            if command == "":
                 continue 
 
             num = int(command, 2)
