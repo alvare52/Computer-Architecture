@@ -7,6 +7,8 @@ import sys
 HLT = 0b00000001 # stop running
 PRN = 0b01000111 # prints value at register given
 LDI = 0b10000010 # sets a specified register to a specified value
+MUL = 0b10100010 # multiplies. reg1 *= reg2 (MUL, reg1, reg2)
+ADD = 0b10100000 # adds. reg1 += reg2 (ADD, reg1, reg2)
 
 class CPU:
     """Main CPU class."""
@@ -24,6 +26,8 @@ class CPU:
         # give file_name parameter (basically simple01.py but run with mult.ls8)
         # read commands in that file instead of hardcoded ones here
         # also add a mult command thing
+
+        # OLD
         # address = 0
 
         # For now, we've just hardcoded a program:
@@ -57,6 +61,7 @@ class CPU:
             print(f"{sys.argv[0]}: {sys.argv[1]} file was not found")
             sys.exit()
         
+        # OLD
         # for instruction in file:
         #     self.ram[address] = instruction
         #     address += 1
@@ -67,10 +72,16 @@ class CPU:
         
         # first 2 bits say how many operands there are 
         # self.pc += 1 + (op >> 6) # ?
-
+        print(f"ALU - {op}")
         if op == "ADD":
+            print("inside ADD block")
             self.reg[reg_a] += self.reg[reg_b]
+
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
+
         #elif op == "SUB": etc
+
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -121,8 +132,20 @@ class CPU:
                 print("PRN")
                 # print out whatever's in the register after PRN
                 reg_index = self.ram[self.pc + 1]
-                print(f"Register: {reg_index}, value: {self.reg[reg_index]}")
+                print(f"R{reg_index} is {self.reg[reg_index]}")
                 # self.pc += 1
+
+            if command == MUL:
+                print("MUL")
+                a = self.ram[self.pc + 1]
+                b = self.ram[self.pc + 2]
+                self.alu("MUL", a, b)
+
+            if command == ADD:
+                print("ADD")
+                a = self.ram[self.pc + 1]
+                b = self.ram[self.pc + 2]
+                self.alu("ADD", a, b)
 
             # change so this looks at command >> 6 (this chops off last 6 bits)
             self.pc += 1 + (command >> 6)
