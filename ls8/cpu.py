@@ -18,29 +18,48 @@ class CPU:
         self.ram = [0] * 256 # 256 bytes of memory?
         self.running = True
 
-    def load(self):
+    def load(self, file_name):
         """Load a program into memory."""
         # Day 2 - 
         # give file_name parameter (basically simple01.py but run with mult.ls8)
         # read commands in that file instead of hardcoded ones here
         # also add a mult command thing
-        address = 0
+        # address = 0
 
         # For now, we've just hardcoded a program:
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
+        # program = [
+        #     # From print8.ls8
+        #     0b10000010, # LDI R0,8
+        #     0b00000000,
+        #     0b00001000,
+        #     0b01000111, # PRN R0
+        #     0b00000000,
+        #     0b00000001, # HLT
+        # ]
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+        try:
+            address = 0
+            with open(file_name) as file:
+                for line in file:
+                    split_line = line.split("#")[0]
+                    command = split_line.strip()
+
+                    if command == "":
+                        continue
+
+                    instruction = int(command, 2)
+                    self.ram[address] = instruction
+
+                    address += 1
+    
+        except FileNotFoundError:
+            print(f"{sys.argv[0]}: {sys.argv[1]} file was not found")
+            sys.exit()
+        
+        # for instruction in file:
+        #     self.ram[address] = instruction
+        #     address += 1
 
     # arithasdfma'sdf
     def alu(self, op, reg_a, reg_b):
@@ -113,3 +132,15 @@ class CPU:
 
     def ram_write(self, value, address):
         self.ram[address] = value
+
+if len(sys.argv) < 2:
+    print("Please pass in a second filename: python3 in_out.py second_filename.py")
+    sys.exit()
+
+file_name = sys.argv[1]
+# load_memory(file_name)
+
+cpu = CPU()
+
+cpu.load(file_name)
+cpu.run()
