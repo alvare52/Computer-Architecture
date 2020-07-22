@@ -78,3 +78,5 @@ my_list.sort(reverse=False)
 
 for thing in my_list:
     print(thing)
+
+    # [::-1] starts at end then keeps going backwards

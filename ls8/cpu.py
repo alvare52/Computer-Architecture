@@ -20,7 +20,10 @@ class CPU:
 
     def load(self):
         """Load a program into memory."""
-
+        # Day 2 - 
+        # give file_name parameter (basically simple01.py but run with mult.ls8)
+        # read commands in that file instead of hardcoded ones here
+        # also add a mult command thing
         address = 0
 
         # For now, we've just hardcoded a program:
