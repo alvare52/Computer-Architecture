@@ -93,17 +93,17 @@ class CPU:
                 # second thing after LDI (ex: 8)
                 num_to_save = self.ram[self.pc + 2]
                 self.reg[reg_index] = num_to_save
-                self.pc += 2 # delete this later
+                # self.pc += 2 # delete this later
 
             if command == PRN:
                 print("PRN")
                 # print out whatever's in the register after PRN
                 reg_index = self.ram[self.pc + 1]
                 print(f"Register: {reg_index}, value: {self.reg[reg_index]}")
-                self.pc += 1
+                # self.pc += 1
 
-            # change so this looks at command >> 6
-            self.pc += 1
+            # change so this looks at command >> 6 (this chops off last 6 bits)
+            self.pc += 1 + (command >> 6)
 
     def ram_read(self, address):
         return self.ram[address]
