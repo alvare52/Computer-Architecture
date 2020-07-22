@@ -2,12 +2,21 @@
 
 import sys
 
+# instructions
+
+HLT = 0b00000001 # stop running
+PRN = 0b01000111 # prints value at register given
+LDI = 0b10000010 # sets a specified register to a specified value
+
 class CPU:
     """Main CPU class."""
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        self.reg = [0] * 8 # registers 0-7
+        self.pc = 0 # counter
+        self.ram = [0] * 256 # 256 bytes of memory?
+        self.running = True
 
     def load(self):
         """Load a program into memory."""
@@ -30,9 +39,12 @@ class CPU:
             self.ram[address] = instruction
             address += 1
 
-
+    # arithasdfma'sdf
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
+        
+        # first 2 bits say how many operands there are 
+        # self.pc += 1 + (op >> 6) # ?
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
@@ -62,4 +74,39 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        print(" - RUN - ")
+        
+
+        while self.running:
+            
+            command = self.ram[self.pc]
+
+            if command == HLT:
+                print(" - HLT - ")
+                self.running = False 
+
+            if command == LDI:
+                print("LDI")
+
+                # thing thats right after LDI (ex: R0)
+                reg_index = self.ram[self.pc + 1]
+                # second thing after LDI (ex: 8)
+                num_to_save = self.ram[self.pc + 2]
+                self.reg[reg_index] = num_to_save
+                self.pc += 2 # delete this later
+
+            if command == PRN:
+                print("PRN")
+                # print out whatever's in the register after PRN
+                reg_index = self.ram[self.pc + 1]
+                print(f"Register: {reg_index}, value: {self.reg[reg_index]}")
+                self.pc += 1
+
+            # change so this looks at command >> 6
+            self.pc += 1
+
+    def ram_read(self, address):
+        return self.ram[address]
+
+    def ram_write(self, value, address):
+        self.ram[address] = value
