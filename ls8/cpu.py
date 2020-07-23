@@ -11,6 +11,8 @@ MUL = 0b10100010 # multiplies. reg1 *= reg2 (MUL, reg1, reg2)
 ADD = 0b10100000 # adds. reg1 += reg2 (ADD, reg1, reg2)
 POP = 0b01000110 # Pop the value at the top of the stack into the given register
 PUSH = 0b01000101 # Push the value in the given register on the stack.
+CALL = 0b01010000 # Calls a subroutine (function) stored at address in the following register
+RET = 0b00010001 # Return from subroutine. Pop the value from the
 
 class CPU:
     """Main CPU class."""
