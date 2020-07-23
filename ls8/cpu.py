@@ -9,6 +9,8 @@ PRN = 0b01000111 # prints value at register given
 LDI = 0b10000010 # sets a specified register to a specified value
 MUL = 0b10100010 # multiplies. reg1 *= reg2 (MUL, reg1, reg2)
 ADD = 0b10100000 # adds. reg1 += reg2 (ADD, reg1, reg2)
+POP = 0b01000110 # Pop the value at the top of the stack into the given register
+PUSH = 0b01000101 # Push the value in the given register on the stack.
 
 class CPU:
     """Main CPU class."""
@@ -19,6 +21,8 @@ class CPU:
         self.pc = 0 # counter
         self.ram = [0] * 256 # 256 bytes of memory?
         self.running = True
+        # NEW
+        self.reg[7] = 0xF4
 
     def load(self, file_name):
         """Load a program into memory."""
@@ -150,9 +154,32 @@ class CPU:
                 b = self.ram[self.pc + 2]
                 self.alu("ADD", a, b)
 
-            # push
-            # if command = POP:
-            # pop
+            if command == PUSH:
+                # decrement stack pointer
+                self.reg[7] -= 1
+
+                # get a value from the given register
+                reg = self.ram[self.pc + 1]
+                value = self.reg[reg]
+
+                # put at stack pointer address
+                sp = self.reg[7]
+                self.ram[sp] = value
+                # pc += 1
+        
+            if command == POP:
+                # get the stack pointer (where do we look?)
+                sp = self.reg[7]
+                # get register number to put value in
+                reg = self.ram[self.pc + 1]
+                # use stack pointer to get the value
+                value = self.ram[sp]
+                # put the value into the given register
+                self.reg[reg] = value
+                # increment our stack pointer
+                self.reg[7] += 1
+                # increment our program counter
+                # pc += 1
 
             # change so this looks at command >> 6 (this chops off last 6 bits)
             self.pc += 1 + (command >> 6)
