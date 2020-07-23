@@ -12,7 +12,7 @@ ADD = 0b10100000 # adds. reg1 += reg2 (ADD, reg1, reg2)
 POP = 0b01000110 # Pop the value at the top of the stack into the given register
 PUSH = 0b01000101 # Push the value in the given register on the stack.
 CALL = 0b01010000 # Calls a subroutine (function) stored at address in the following register
-RET = 0b00010001 # Return from subroutine. Pop the value from the
+RET = 0b00010001 # Return from subroutine. Pop the value from the top of the stack and store it in the PC
 
 class CPU:
     """Main CPU class."""
@@ -136,6 +136,7 @@ class CPU:
                 num_to_save = self.ram[self.pc + 2]
                 self.reg[reg_index] = num_to_save
                 # self.pc += 2 # delete this later
+                self.pc += 1 + (command >> 6)
 
             if command == PRN:
                 print("PRN")
@@ -143,18 +144,21 @@ class CPU:
                 reg_index = self.ram[self.pc + 1]
                 print(f"R{reg_index} is {self.reg[reg_index]}")
                 # self.pc += 1
+                self.pc += 1 + (command >> 6)
 
             if command == MUL:
                 print("MUL")
                 a = self.ram[self.pc + 1]
                 b = self.ram[self.pc + 2]
                 self.alu("MUL", a, b)
+                self.pc += 1 + (command >> 6)
 
             if command == ADD:
                 print("ADD")
                 a = self.ram[self.pc + 1]
                 b = self.ram[self.pc + 2]
                 self.alu("ADD", a, b)
+                self.pc += 1 + (command >> 6)
 
             if command == PUSH:
                 # decrement stack pointer
@@ -168,6 +172,7 @@ class CPU:
                 sp = self.reg[7]
                 self.ram[sp] = value
                 # pc += 1
+                self.pc += 1 + (command >> 6)
         
             if command == POP:
                 # get the stack pointer (where do we look?)
@@ -182,9 +187,10 @@ class CPU:
                 self.reg[7] += 1
                 # increment our program counter
                 # pc += 1
+                self.pc += 1 + (command >> 6)
 
             # change so this looks at command >> 6 (this chops off last 6 bits)
-            self.pc += 1 + (command >> 6)
+            
 
     def ram_read(self, address):
         return self.ram[address]
