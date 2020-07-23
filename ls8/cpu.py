@@ -46,9 +46,12 @@ class CPU:
             address = 0
             with open(file_name) as file:
                 for line in file:
+                    # 
                     split_line = line.split("#")[0]
+                    # remove white spaces
                     command = split_line.strip()
 
+                    # skip empty lines
                     if command == "":
                         continue
 
@@ -74,7 +77,7 @@ class CPU:
         # self.pc += 1 + (op >> 6) # ?
         print(f"ALU - {op}")
         if op == "ADD":
-            print("inside ADD block")
+            # print("inside ADD block")
             self.reg[reg_a] += self.reg[reg_b]
 
         elif op == "MUL":
@@ -147,6 +150,10 @@ class CPU:
                 b = self.ram[self.pc + 2]
                 self.alu("ADD", a, b)
 
+            # push
+            # if command = POP:
+            # pop
+
             # change so this looks at command >> 6 (this chops off last 6 bits)
             self.pc += 1 + (command >> 6)
 
@@ -155,6 +162,10 @@ class CPU:
 
     def ram_write(self, value, address):
         self.ram[address] = value
+
+
+
+# MAIN
 
 if len(sys.argv) < 2:
     print("Please pass in a second filename: python3 in_out.py second_filename.py")
