@@ -189,6 +189,29 @@ class CPU:
                 # pc += 1
                 self.pc += 1 + (command >> 6)
 
+            if command == CALL:
+                # get register number
+                reg = self.ram[self.pc + 1]
+                # get the address to jump to, from the register
+                address = self.reg[reg]
+                # push command after CALL onto the stack
+                return_address = self.pc + 2
+                # decrement stack pointer
+                self.reg[7] -= 1
+                sp = self.reg[7]
+                # put return address on the stack
+                self.ram[sp] = return_address
+                # then look at register, jump to that address
+                self.pc = address
+
+            if command == RET:
+                # pop the return address off the stack
+                sp = self.reg[7]
+                return_address = self.ram[sp]
+                self.reg[7] += 1
+                # go to return address: set the pc to return address
+                self.pc = return_address
+
             # change so this looks at command >> 6 (this chops off last 6 bits)
             
 
