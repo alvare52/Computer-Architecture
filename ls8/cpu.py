@@ -112,13 +112,16 @@ class CPU:
             self.reg[reg_a] *= self.reg[reg_b]
 
         elif op == "CMP":
-            if reg_a == reg_b:
+            # self.fl = 0b00000000
+            # print(f"before CMP: {reg_a} {reg_b}")
+            # print(f"self.reg = {self.reg}")
+            if self.reg[reg_a] == self.reg[reg_b]:
                 self.fl = 0b00000001 # 00000LGE
-            elif reg_a < reg_b:
+            elif self.reg[reg_a] < self.reg[reg_b]:
                 self.fl = 0b00000100
-            elif reg_a > reg_b:
+            elif self.reg[reg_a] > self.reg[reg_b]:
                 self.fl = 0b00000010
-
+            # print(f"self.fl after CMP: {self.fl}")
         #elif op == "SUB": etc
 
         else:
@@ -152,6 +155,9 @@ class CPU:
         while self.running:
             
             command = self.ram[self.pc]
+            # print(f"pc = {self.pc}")
+
+            # print(f"regs = {self.reg} - pc = {self.pc}")
 
             if command == HLT:
                 print(" - HLT - ")
@@ -166,13 +172,19 @@ class CPU:
                 num_to_save = self.ram[self.pc + 2]
                 self.reg[reg_index] = num_to_save
                 # self.pc += 2 # delete this later
+
+                # print(f"reg_index = {reg_index}, num_to_save = {num_to_save}")
+
                 self.pc += 1 + (command >> 6)
 
             if command == PRN:
                 print("PRN")
                 # print out whatever's in the register after PRN
                 reg_index = self.ram[self.pc + 1]
-                print(f"R{reg_index} is {self.reg[reg_index]}")
+                
+                # print(f"Regs = {self.reg}")
+
+                print(f"PRN - R{reg_index} is {self.reg[reg_index]}")
                 # self.pc += 1
                 self.pc += 1 + (command >> 6)
 
@@ -252,14 +264,44 @@ class CPU:
                 self.pc += 1 + (command >> 6) #?
 
             if command == JMP:
-                self.pc += 1 + (command >> 6)
+                print("JMP")
+                # get register number
+                reg = self.ram[self.pc + 1]
+                # get the address to jump to, from the register
+                address = self.reg[reg]
+                # then look at register, jump to that address
+                self.pc = address
+
+                # self.pc += 1 + (command >> 6)
 
             if command == JEQ:
-                self.pc += 1 + (command >> 6)
+                print("JEQ")
+                # if equal flag is on
+                if self.fl == 0b00000001: # 00000LGE
+                    # print(f"JEQ flag = {self.fl}")
+                    # get register number
+                    reg = self.ram[self.pc + 1]
+                    # get the address to jump to, from the register
+                    address = self.reg[reg]
+                    # then look at register, jump to that address
+                    self.pc = address
+                else:
+                    self.pc += 1 + (command >> 6)
 
             if command == JNE:
-                self.pc += 1 (command >> 6)
-            
+                print("JNE")
+                # if equal flag is NOT on
+                # if self.fl != 0b00000001:
+                if self.fl == 0b00000010 or self.fl == 0b00000100: # 00000LGE
+                    # print(f"JNE flag = {self.fl}")
+                    # get register number
+                    reg = self.ram[self.pc + 1]
+                    # get the address to jump to, from the register
+                    address = self.reg[reg]
+                    # then look at register, jump to that address
+                    self.pc = address
+                else:
+                    self.pc += 1 + (command >> 6)   
 
     def ram_read(self, address):
         return self.ram[address]
