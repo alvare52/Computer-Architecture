@@ -13,6 +13,8 @@ POP = 0b01000110 # Pop the value at the top of the stack into the given register
 PUSH = 0b01000101 # Push the value in the given register on the stack.
 CALL = 0b01010000 # Calls a subroutine (function) stored at address in the following register
 RET = 0b00010001 # Return from subroutine. Pop the value from the top of the stack and store it in the PC
+
+# Sprint stuff
 CMP = 0b10100111 # Compare 2 registers and sets flag property accordingly
 JMP = 0b01010100 # Jump to the address stored in the given register and set pc to address stored in given register 
 JEQ = 0b01010101 # if equal flag is 1, jump to address stored in the given register
@@ -108,6 +110,14 @@ class CPU:
 
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+
+        elif op == "CMP":
+            if reg_a == reg_b:
+                self.fl = 0b00000001 # 00000LGE
+            elif reg_a < reg_b:
+                self.fl = 0b00000100
+            elif reg_a > reg_b:
+                self.fl = 0b00000010
 
         #elif op == "SUB": etc
 
@@ -233,6 +243,22 @@ class CPU:
                 self.pc = return_address
 
             # change so this looks at command >> 6 (this chops off last 6 bits)
+
+            if command == CMP:
+                print("CMP")
+                a = self.ram[self.pc + 1]
+                b = self.ram[self.pc + 2]
+                self.alu("CMP", a, b)
+                self.pc += 1 + (command >> 6) #?
+
+            if command == JMP:
+                self.pc += 1 + (command >> 6)
+
+            if command == JEQ:
+                self.pc += 1 + (command >> 6)
+
+            if command == JNE:
+                self.pc += 1 (command >> 6)
             
 
     def ram_read(self, address):
