@@ -13,6 +13,10 @@ POP = 0b01000110 # Pop the value at the top of the stack into the given register
 PUSH = 0b01000101 # Push the value in the given register on the stack.
 CALL = 0b01010000 # Calls a subroutine (function) stored at address in the following register
 RET = 0b00010001 # Return from subroutine. Pop the value from the top of the stack and store it in the PC
+CMP = 0b10100111 # Compare 2 registers and sets flag property accordingly
+JMP = 0b01010100 # Jump to the address stored in the given register and set pc to address stored in given register 
+JEQ = 0b01010101 # if equal flag is 1, jump to address stored in the given register
+JNE = 0b01010110 # if equal flag is 0, jump to address stored in the given register
 
 class CPU:
     """Main CPU class."""
@@ -25,6 +29,22 @@ class CPU:
         self.running = True
         # NEW
         self.reg[7] = 0xF4
+        # NEW for Sprint
+        self.fl = 0b00000000 # 00000LGE
+
+    #         The flags register `FL` holds the current flags status. These flags
+    # can change based on the operands given to the `CMP` opcode.
+
+    # The register is made up of 8 bits. If a particular bit is set, that flag is "true".
+
+    # `FL` bits: `00000LGE`
+
+    # * `L` Less-than: during a `CMP`, set to 1 if registerA is less than registerB,
+    # zero otherwise.
+    # * `G` Greater-than: during a `CMP`, set to 1 if registerA is greater than
+    # registerB, zero otherwise.
+    # * `E` Equal: during a `CMP`, set to 1 if registerA is equal to registerB, zero
+    # otherwise.
 
     def load(self, file_name):
         """Load a program into memory."""
